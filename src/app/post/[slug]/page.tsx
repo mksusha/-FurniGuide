@@ -8,13 +8,16 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 
 type Props = {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
+    // если есть searchParams, то тоже Promise
+    searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 // SEO метаданные
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const resolvedParams = await params;
     const post = await prisma.post.findUnique({
-        where: { slug: params.slug },
+        where: { slug: resolvedParams.slug },
     });
 
     if (!post) return {};
@@ -26,8 +29,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function PostPage({ params }: Props) {
+    const resolvedParams = await params;
     const post = await prisma.post.findUnique({
-        where: { slug: params.slug },
+        where: { slug: resolvedParams.slug },
         include: {
             category: true,
             author: true,
@@ -44,21 +48,19 @@ export default async function PostPage({ params }: Props) {
         <div className="min-h-screen flex flex-col">
             <Header categories={categories} />
 
-            {/* Основной блок растягивается между хедером и футером */}
             <div className="flex flex-1 flex-col md:flex-row overflow-hidden pt-14">
                 <div className="overflow-y-auto md:h-screen md:w-60 border-b md:border-b-0 md:border-r border-gray-200">
                     <AppSidebar categories={categories} />
                 </div>
 
                 <main className="flex-1 p-4 md:p-8 overflow-y-auto flex flex-col">
-
-                        <Breadcrumbs
-                            categories={categories}
-                            currentPostTitle={post.title}
-                            customSegments={["category", post.category.slug]}
-                            postSlug={post.slug}
-                            currentSlug={post.slug}
-                        />
+                    <Breadcrumbs
+                        categories={categories}
+                        currentPostTitle={post.title}
+                        customSegments={["category", post.category.slug]}
+                        postSlug={post.slug}
+                        currentSlug={post.slug}
+                    />
                     <div className="max-w-3xl mx-auto w-full">
                         <p className="text-sm text-gray-500 mb-2">
                             Категория:{" "}
@@ -112,7 +114,6 @@ export default async function PostPage({ params }: Props) {
                 </main>
             </div>
 
-            {/* Футер вне main, всегда снизу */}
             <Footer />
         </div>
     );

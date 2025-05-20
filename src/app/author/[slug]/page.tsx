@@ -7,14 +7,16 @@ import AuthorBreadcrumbWrapper from "@/components/ui/AuthorBreadcrumbWrapper";
 import PostCardHorizontal from "@/components/PostCardHorizontal";
 import Footer from "@/components/Footer";
 
-type Props = {
-    params: { slug: string };
-};
-
 // SEO
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+                                           params,
+                                       }: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const resolvedParams = await params;
+
     const author = await prisma.author.findUnique({
-        where: { slug: params.slug },
+        where: { slug: resolvedParams.slug },
     });
 
     if (!author) return {};
@@ -25,9 +27,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-export default async function AuthorPage({ params }: Props) {
+export default async function AuthorPage({
+                                             params,
+                                         }: {
+    params: Promise<{ slug: string }>;
+}) {
+    const resolvedParams = await params;
+
     const author = await prisma.author.findUnique({
-        where: { slug: params.slug },
+        where: { slug: resolvedParams.slug },
         include: {
             posts: {
                 include: { category: true },
@@ -46,7 +54,6 @@ export default async function AuthorPage({ params }: Props) {
         <div className="min-h-screen flex flex-col">
             <Header categories={categories} />
 
-            {/* Основной контент — сайдбар и main */}
             <div className="flex flex-1 flex-col md:flex-row pt-14 overflow-hidden">
                 <div className="overflow-y-auto md:h-screen md:w-60 border-b md:border-b-0 md:border-r border-gray-200">
                     <AppSidebar categories={categories} />
@@ -71,9 +78,7 @@ export default async function AuthorPage({ params }: Props) {
                             <div>
                                 <h1 className="text-3xl font-bold text-white">{author.name}</h1>
                                 {author.bio && (
-                                    <p className="text-white mt-2 text-sm leading-relaxed">
-                                        {author.bio}
-                                    </p>
+                                    <p className="text-white mt-2 text-sm leading-relaxed">{author.bio}</p>
                                 )}
                             </div>
                         </div>
@@ -104,7 +109,6 @@ export default async function AuthorPage({ params }: Props) {
                 </main>
             </div>
 
-            {/* Футер вне main, всегда снизу */}
             <Footer />
         </div>
     );

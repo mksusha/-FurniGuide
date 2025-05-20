@@ -1,26 +1,25 @@
 import { prisma } from '@/lib/prisma'
 import Header from '@/components/Header'
 import { AppSidebar } from '@/components/app-sidebar'
-import PostCard from '@/components/PostCard'
-import { Pagination } from '@/components/ui/pagination'
 import Breadcrumbs from '@/components/ui/Breadcrumbs'
+import { Pagination } from '@/components/ui/pagination'
+import SearchResultCard from '@/components/SearchResultCard'
+import SearchInputPage from '@/components/SearchInputPage'
+import Footer from '@/components/Footer'
 import { notFound } from 'next/navigation'
-import PostCardHorizontal from "@/components/PostCardHorizontal";
-import SearchResultCard from "@/components/SearchResultCard";
-import SearchInputPage from "@/components/SearchInputPage";
-import Footer from "@/components/Footer";
 
 type Props = {
-    searchParams: {
+    searchParams: Promise<{
         q?: string
         page?: string
-    }
+    }>
 }
 
 const POSTS_PER_PAGE = 6
 
 export async function generateMetadata({ searchParams }: Props) {
-    const q = searchParams.q || ''
+    const resolvedSearchParams = await searchParams
+    const q = resolvedSearchParams.q || ''
 
     if (!q.trim()) return { title: 'Поиск' }
 
@@ -31,41 +30,42 @@ export async function generateMetadata({ searchParams }: Props) {
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-    const q = (searchParams.q || '').trim()
-    const page = Number(searchParams.page) || 1
+    const resolvedSearchParams = await searchParams
+    const q = (resolvedSearchParams.q || '').trim()
+    const page = Number(resolvedSearchParams.page) || 1
 
     if (!q) {
         return (
             <div className="min-h-screen flex flex-col">
-                <Header categories={[]}/>
+                <Header categories={[]} />
                 <div className="flex flex-1 overflow-hidden pt-14">
                     <div className="overflow-y-auto h-screen">
-                        <AppSidebar categories={[]}/>
+                        <AppSidebar categories={[]} />
                     </div>
                     <main className="flex-1 p-8 overflow-y-auto">
                         <div className="max-w-7xl mx-auto">
-                            <Breadcrumbs currentSlug="search" categories={[]}/>
+                            <Breadcrumbs currentSlug="search" categories={[]} />
                             <h1 className="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl mb-6">
                                 Введите поисковый запрос
                             </h1>
                         </div>
                     </main>
                 </div>
+                <Footer />
             </div>
         )
     }
 
-    // Подгружаем категории и посты параллельно
     const categoriesPromise = prisma.category.findMany({
-        orderBy: {name: 'asc'},
+        orderBy: { name: 'asc' },
     })
 
     const where = {
         OR: [
-            {title: {contains: q, mode: 'insensitive' as const}},
-            {subtitle: {contains: q, mode: 'insensitive' as const}},
-            {content: {contains: q, mode: 'insensitive' as const}},
-            {author: {name: {contains: q, mode: 'insensitive' as const}}},
+            { title: { contains: q, mode: 'insensitive' as const } },
+            { subtitle: { contains: q, mode: 'insensitive' as const } },
+            { content: { contains: q, mode: 'insensitive' as const } },
+            { author: { name: { contains: q, mode: 'insensitive' as const } } },
         ],
     }
 
@@ -75,12 +75,12 @@ export default async function SearchPage({ searchParams }: Props) {
             author: true,
             category: true,
         },
-        orderBy: {publishedAt: 'desc'},
+        orderBy: { publishedAt: 'desc' },
         skip: (page - 1) * POSTS_PER_PAGE,
         take: POSTS_PER_PAGE,
     })
 
-    const totalPromise = prisma.post.count({where})
+    const totalPromise = prisma.post.count({ where })
 
     const [categories, posts, total] = await Promise.all([
         categoriesPromise,
@@ -94,17 +94,17 @@ export default async function SearchPage({ searchParams }: Props) {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Header categories={categories}/>
+            <Header categories={categories} />
 
             <div className="flex flex-1 overflow-hidden pt-16">
                 <div className="overflow-y-auto h-screen">
-                    <AppSidebar categories={categories}/>
+                    <AppSidebar categories={categories} />
                 </div>
 
                 <main className="flex-1 p-8 overflow-y-auto">
-                    <Breadcrumbs currentSlug="search" categories={categories}/>
+                    <Breadcrumbs currentSlug="search" categories={categories} />
                     <div className="max-w-4xl mx-auto">
-                        <SearchInputPage/>
+                        <SearchInputPage />
                         <p className="text-gray-600 my-5">
                             Найдено результатов: <strong>{total}</strong>
                         </p>
@@ -114,7 +114,7 @@ export default async function SearchPage({ searchParams }: Props) {
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 gap-8">
-                                    {posts.map(post => (
+                                    {posts.map((post) => (
                                         <SearchResultCard
                                             key={post.id}
                                             post={post}
@@ -130,7 +130,7 @@ export default async function SearchPage({ searchParams }: Props) {
                                             totalPages={totalPages}
                                             currentPage={page}
                                             basePath="/search"
-                                            query={{q}}
+                                            query={{ q }}
                                         />
                                     </div>
                                 )}
@@ -140,8 +140,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 </main>
             </div>
 
-            {/* Вынеси Footer сюда — вне скроллящегося блока */}
-            <Footer/>
+            <Footer />
         </div>
     )
 }

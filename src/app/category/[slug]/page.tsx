@@ -1,5 +1,3 @@
-// app/category/[slug]/page.tsx
-
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -12,18 +10,20 @@ import Footer from "@/components/Footer";
 
 const POSTS_PER_PAGE = 6;
 
-// Параметры страницы, как Next.js ожидает
-export type CategoryPageProps = {
-    params: { slug: string };
-    searchParams?: { page?: string };
+type Props = {
+    params: Promise<{ slug: string }>;
+    searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-// ✅ Типы соответствуют ожиданиям Next.js
-export async function generateMetadata(
-    { params }: { params: { slug: string } }
-): Promise<Metadata> {
+export async function generateMetadata({
+                                           params,
+                                       }: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const resolvedParams = await params;
+
     const category = await prisma.category.findUnique({
-        where: { slug: params.slug },
+        where: { slug: resolvedParams.slug },
     });
 
     if (!category) return {};
@@ -34,9 +34,11 @@ export async function generateMetadata(
     };
 }
 
-export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
-    const { slug } = params;
-    const page = Number(searchParams?.page) || 1;
+export default async function CategoryPage({ params, searchParams }: Props) {
+    const resolvedParams = await params;
+    const resolvedSearchParams = searchParams ? await searchParams : {};
+    const slug = resolvedParams.slug;
+    const page = Number(resolvedSearchParams.page) || 1;
 
     const category = await prisma.category.findUnique({
         where: { slug },
