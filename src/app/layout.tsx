@@ -38,7 +38,7 @@ export default function RootLayout({
         <head>
             <link rel="icon" href="/favicon.ico" />
         </head>
-        <body className="font-nunito antialiased bg-white text-gray-900">
+        <body className="font-nunito antialiased">
         {children}
         </body>
         </html>

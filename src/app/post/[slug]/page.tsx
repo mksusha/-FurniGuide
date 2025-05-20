@@ -9,11 +9,9 @@ import Footer from "@/components/Footer";
 
 type Props = {
     params: Promise<{ slug: string }>;
-    // если есть searchParams, то тоже Promise
     searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-// SEO метаданные
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     const resolvedParams = await params;
     const post = await prisma.post.findUnique({
@@ -61,53 +59,62 @@ export default async function PostPage({ params }: Props) {
                         postSlug={post.slug}
                         currentSlug={post.slug}
                     />
+
                     <div className="max-w-3xl mx-auto w-full">
-                        <p className="text-sm text-gray-500 mb-2">
-                            Категория:{" "}
-                            <a
-                                href={`/category/${post.category.slug}`}
-                                className="text-indigo-600 hover:underline"
-                            >
-                                {post.category.name}
-                            </a>
-                        </p>
 
-                        {post.author && (
-                            <div className="mb-4 flex items-center gap-3 text-sm text-gray-600">
-                                {post.author.avatarUrl && (
+                        {/* Автор и категория */}
+                        <div className="mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            {/* Автор */}
+                            {post.author && (
+                                <div className="flex items-center text-base text-gray-600">
                                     <img
-                                        src={post.author.avatarUrl}
+                                        src={post.author.avatarUrl || '/images/avatar.svg'}
                                         alt={post.author.name}
-                                        className="w-8 h-8 rounded-full object-cover"
+                                        className="w-12 h-12 rounded-full object-cover mr-3"
                                     />
-                                )}
-                                <span>
-                  Автор:{" "}
-                                    <Link
-                                        href={`/author/${post.author.slug}?from=/category/${post.category.slug}/${post.slug}`}
-                                        className="text-indigo-600 hover:underline"
-                                    >
-                    {post.author.name}
-                  </Link>
-                </span>
-                            </div>
-                        )}
+                                    <div>
+                                        <p className="text-gray-500">Автор:</p>
+                                        <Link
+                                            href={`/author/${post.author.slug}?from=/category/${post.category.slug}/${post.slug}`}
+                                            className="text-indigo-600 hover:underline font-medium"
+                                        >
+                                            {post.author.name}
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
 
-                        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+                            {/* Категория */}
+                            <div>
+                                <Link
+                                    href={`/category/${post.category.slug}`}
+                                    className="inline-block bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-base font-medium hover:bg-indigo-200 transition"
+                                >
+                                    {post.category.name}
+                                </Link>
+                            </div>
+                        </div>
+
+
+
+                        {/* Заголовок и подзаголовок */}
+                        <h1 className="text-4xl font-bold mb-4 text-gray-900">{post.title}</h1>
 
                         {post.subtitle && (
                             <p className="text-lg text-gray-700 mb-6">{post.subtitle}</p>
                         )}
 
+                        {/* Картинка */}
                         {post.imageUrl && (
                             <img
                                 src={post.imageUrl}
                                 alt={post.title}
-                                className="rounded-xl w-full mb-8"
+                                className="rounded-xl w-full mb-8 border border-gray-200 shadow-sm max-h-[500px] object-cover"
                             />
                         )}
 
-                        <div className="prose max-w-none">
+                        {/* Контент */}
+                        <div className="prose prose-indigo max-w-none text-gray-800">
                             <p>{post.content}</p>
                         </div>
                     </div>

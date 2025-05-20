@@ -190,14 +190,17 @@ export default function SearchResultCard({
                 </div>
                 {post.author && (
                     <div className="flex items-center mb-2">
-                        {post.author.avatarUrl && (
-                            <img
-                                src={post.author.avatarUrl}
-                                alt={post.author.name}
-                                className="w-6 h-6 mr-2 rounded-full object-cover"
-                            />
+                        {post.author && (
+                            <div className="flex items-center mb-2">
+                                <img
+                                    src={post.author.avatarUrl || '/images/avatar.svg'}
+                                    alt={post.author.name}
+                                    className="w-8 h-8 mr-3 rounded-full object-cover"
+                                />
+                                <span className="text-gray-700 font-medium">{post.author.name}</span>
+                            </div>
                         )}
-                        <span className="text-gray-700 font-medium">{post.author.name}</span>
+
                     </div>
                 )}
                 <h3 className="text-2xl font-semibold text-gray-900">{post.title}</h3>

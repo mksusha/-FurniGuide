@@ -32,7 +32,7 @@ interface HomePageClientProps {
 
 export default function HomePageClient({ initialPosts, initialCategories }: HomePageClientProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories] = useState<Category[]>(initialCategories);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialPosts.length === POSTS_PER_PAGE);
   const [loading, setLoading] = useState(false);
@@ -59,7 +59,6 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
         setHasMore(false);
       }
 
-      // Плавная прокрутка вниз после добавления новых постов
       if (containerRef.current) {
         containerRef.current.scrollTo({
           top: containerRef.current.scrollHeight,
@@ -74,26 +73,28 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
   };
 
   return (
-      <div className="min-h-screen flex flex-col">
-        <Header categories={categories} />
+      <div className="flex flex-col min-h-screen">
+        <Header categories={categories}/>
 
-        <div className="flex flex-1 flex-col md:flex-row pt-14 overflow-hidden">
-          <div className="overflow-y-auto md:h-screen md:w-64 border-b md:border-b-0 md:border-r border-gray-200">
-            <AppSidebar categories={categories} />
-          </div>
+        {/* Контейнер с сайдбаром и контентом */}
+        <div className="flex flex-1">
+          {/* Sidebar фиксированной ширины */}
+          <aside className="hidden md:block w-64 border-r border-gray-200">
+            <AppSidebar categories={categories}/>
+          </aside>
 
-          {/* Добавляем ref и фиксируем min-h, чтобы уменьшить скачки */}
+          {/* Основной контент */}
           <main
               ref={containerRef}
-              className="flex-1 p-4 md:p-8 overflow-y-auto flex flex-col min-h-[800px]"
+              className="flex-1 p-4 w-11/12 pt-20 lg:pt-24 flex flex-col"
           >
-            <FurnitureFeatureSection />
+            <FurnitureFeatureSection/>
 
             <section className="mt-16 w-11/12 m-auto space-y-8 flex flex-col">
               <h2 className="text-2xl text-center font-bold">Последние новости</h2>
 
               {/* Вертикальные карточки — первые 6 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.slice(0, 6).map((post) => (
                     <PostCard
                         key={post.id}
@@ -116,10 +117,10 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                 ))}
               </div>
 
-              {/* После 9 карточек — еще 6 вертикальных и 3 горизонтальных */}
+              {/* Еще карточки при наличии */}
               {posts.length > 9 && (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {posts.slice(9, 15).map((post) => (
                           <PostCard
                               key={post.id}
@@ -142,9 +143,9 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                   </>
               )}
 
-              {/* Кнопка "Показать ещё" */}
+              {/* Кнопка загрузки */}
               {hasMore && (
-                  <div className="self-center ">
+                  <div className="self-center">
                     <button
                         onClick={loadMorePosts}
                         disabled={loading}
@@ -165,12 +166,12 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                                   r="10"
                                   stroke="currentColor"
                                   strokeWidth="4"
-                              ></circle>
+                              />
                               <path
                                   className="opacity-75"
                                   fill="currentColor"
                                   d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                              ></path>
+                              />
                             </svg>
                             Загрузка...
                           </>
@@ -178,14 +179,15 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                           "Показать ещё"
                       )}
                     </button>
-
                   </div>
               )}
             </section>
           </main>
         </div>
 
+        {/* Footer ВНЕ flex-row и на всю ширину */}
         <Footer/>
       </div>
+
   );
 }

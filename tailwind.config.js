@@ -4,11 +4,13 @@ module.exports = {
         "./pages/**/*.{js,ts,jsx,tsx}",
         "./components/**/*.{js,ts,jsx,tsx}",
         "./app/**/*.{js,ts,jsx,tsx}",
+        "./src/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
         extend: {
             colors: {
                 border: 'var(--border)',
+                input: 'var(--input)',
                 ring: 'var(--ring)',
                 background: 'var(--background)',
                 foreground: 'var(--foreground)',
@@ -39,6 +41,12 @@ module.exports = {
                 chart4: 'var(--chart-4)',
                 chart5: 'var(--chart-5)',
             },
+            borderRadius: {
+                sm: 'var(--radius-sm)',
+                md: 'var(--radius-md)',
+                lg: 'var(--radius-lg)',
+                xl: 'var(--radius-xl)',
+            },
         },
         screens: {
             sm: "365px",
@@ -49,4 +57,4 @@ module.exports = {
         },
     },
     plugins: [],
-}
+};

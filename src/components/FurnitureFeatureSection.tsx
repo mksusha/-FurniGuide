@@ -7,12 +7,12 @@ export default function FurnitureBlogFeatures() {
                 <h2 className="text-center text-base font-semibold text-indigo-600">
                     Мебельный блог
                 </h2>
-                <p className="mx-auto mt-2 max-w-3xl text-center text-4xl font-semibold tracking-tight text-balance text-gray-950 sm:text-5xl">
+                <p className="mx-auto mt-3 max-w-3xl text-center text-4xl font-semibold tracking-tight text-balance text-gray-950 sm:text-4xl">
                     Всё о мебели в одном месте
                 </p>
 
                 {/* Grid без фиксированной высоты */}
-                <div className="mt-8 grid gap-4 lg:grid-cols-3 lg:grid-rows-2 ">
+                <div className="mt-8 sm:mt-5 grid gap-4 lg:grid-cols-3 lg:grid-rows-2 ">
 
                     {/* Левый блок */}
                     <div className="relative lg:row-span-2 flex flex-col bg-sidebar overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)] sm:min-h-[22rem] min-h-[16rem]">
