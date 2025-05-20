@@ -100,7 +100,7 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                         key={post.id}
                         post={post}
                         categoryName={post.category.name}
-                        siteUrl="https://example.com"
+                        siteUrl="https://furni-guide.vercel.app"
                     />
                 ))}
               </div>
@@ -112,7 +112,7 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                         key={post.id}
                         post={post}
                         categoryName={post.category.name}
-                        siteUrl="https://example.com"
+                        siteUrl="https://furni-guide.vercel.app"
                     />
                 ))}
               </div>
@@ -126,7 +126,7 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                               key={post.id}
                               post={post}
                               categoryName={post.category.name}
-                              siteUrl="https://example.com"
+                              siteUrl="https://furni-guide.vercel.app"
                           />
                       ))}
                     </div>
@@ -136,7 +136,7 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                               key={post.id}
                               post={post}
                               categoryName={post.category.name}
-                              siteUrl="https://example.com"
+                              siteUrl="https://furni-guide.vercel.app"
                           />
                       ))}
                     </div>

@@ -95,8 +95,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                                             key={post.id}
                                             post={post}
                                             categoryName={category.name}
-                                            siteUrl="https://your-site-url.com"
-                                        />
+                                            siteUrl="https://furni-guide.vercel.app"                                        />
                                     ))}
                                 </div>
 
