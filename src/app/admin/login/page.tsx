@@ -39,7 +39,7 @@ export default function LoginPage() {
 
     return (
         <main className="max-w-md mx-auto mt-24 p-8 bg-white rounded-2xl shadow-lg ring-1 ring-gray-200">
-            <h1 className="text-3xl font-extrabold mb-8 text-center text-indigo-700">Вход в админку</h1>
+            <h1 className="text-3xl font-extrabold mb-8 text-center text-indigo-700">Вход в админ-панель</h1>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
