@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Header from "@/components/Header";
 import { AppSidebar } from "@/components/app-sidebar";
 import Footer from "@/components/Footer";
@@ -32,12 +32,27 @@ interface HomePageClientProps {
 
 export default function HomePageClient({ initialPosts, initialCategories }: HomePageClientProps) {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
-  const [categories] = useState<Category[]>(initialCategories);
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialPosts.length === POSTS_PER_PAGE);
   const [loading, setLoading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Загружаем актуальные категории при монтировании
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/categories");
+        if (!res.ok) return;
+        const data: Category[] = await res.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Ошибка при загрузке категорий:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const loadMorePosts = async () => {
     if (loading) return;
@@ -74,26 +89,22 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
 
   return (
       <div className="flex flex-col min-h-screen">
-        <Header categories={categories}/>
+        <Header categories={categories} />
 
-        {/* Контейнер с сайдбаром и контентом */}
         <div className="flex flex-1">
-          {/* Sidebar фиксированной ширины */}
           <aside className="hidden md:block w-64 border-r border-gray-200">
-            <AppSidebar categories={categories}/>
+            <AppSidebar categories={categories} />
           </aside>
 
-          {/* Основной контент */}
           <main
               ref={containerRef}
               className="flex-1 p-4 w-11/12 pt-20 lg:pt-24 flex flex-col"
           >
-            <FurnitureFeatureSection/>
+            <FurnitureFeatureSection />
 
             <section className="mt-16 w-11/12 m-auto space-y-8 flex flex-col">
               <h2 className="text-2xl text-center font-bold">Последние новости</h2>
 
-              {/* Вертикальные карточки — первые 6 */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.slice(0, 6).map((post) => (
                     <PostCard
@@ -105,7 +116,6 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                 ))}
               </div>
 
-              {/* Горизонтальные карточки — следующие 3 */}
               <div className="space-y-6">
                 {posts.slice(6, 9).map((post) => (
                     <PostCardHorizontal
@@ -117,7 +127,6 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                 ))}
               </div>
 
-              {/* Еще карточки при наличии */}
               {posts.length > 9 && (
                   <>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -143,7 +152,6 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
                   </>
               )}
 
-              {/* Кнопка загрузки */}
               {hasMore && (
                   <div className="self-center">
                     <button
@@ -185,9 +193,7 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
           </main>
         </div>
 
-        {/* Footer ВНЕ flex-row и на всю ширину */}
-        <Footer/>
+        <Footer />
       </div>
-
   );
 }

@@ -18,7 +18,7 @@ model Post {
   imageUrl    String?
   categoryId  String
   slug        String    @unique
-  category    Category  @relation(fields: [categoryId], references: [id])
+  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   postTags    PostTag[]
   author      Author?   @relation(fields: [authorId], references: [id])
   authorId    String?

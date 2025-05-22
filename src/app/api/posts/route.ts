@@ -1,4 +1,4 @@
-// /pages/api/posts.ts или /app/api/posts/route.ts (Next.js 13+)
+// /pages/api/posts.ts или /app/api/posts/page.tsx (Next.js 13+)
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
