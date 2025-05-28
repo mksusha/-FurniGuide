@@ -8,20 +8,22 @@ datasource db {
 }
 
 model Post {
-  id          String    @id @default(cuid())
-  title       String
-  subtitle    String?
-  content     String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  publishedAt DateTime?
-  imageUrl    String?
-  categoryId  String
-  slug        String    @unique
-  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  postTags    PostTag[]
-  author      Author?   @relation(fields: [authorId], references: [id])
-  authorId    String?
+  id              String    @id @default(cuid())
+  title           String
+  subtitle        String?
+  content         String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  publishedAt     DateTime?
+  imageUrl        String?
+  categoryId      String
+  slug            String    @unique
+  metaTitle       String? // добавил поле metaTitle
+  metaDescription String? // добавил поле metaDescription
+  category        Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  postTags        PostTag[]
+  author          Author?   @relation(fields: [authorId], references: [id])
+  authorId        String?
 }
 
 model Author {
@@ -34,10 +36,12 @@ model Author {
 }
 
 model Category {
-  id    String @id @default(cuid())
-  name  String
-  slug  String @unique
-  posts Post[]
+  id              String  @id @default(cuid())
+  name            String
+  slug            String  @unique
+  metaTitle       String?
+  metaDescription String?
+  posts           Post[]
 }
 
 model Tag {

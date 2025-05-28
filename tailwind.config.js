@@ -47,6 +47,65 @@ module.exports = {
                 lg: 'var(--radius-lg)',
                 xl: 'var(--radius-xl)',
             },
+            typography: (theme) => ({
+                DEFAULT: {
+                    css: {
+                        color: theme('colors.black'), // текст по умолчанию — черный
+                        table: {
+                            marginLeft: 'auto',
+                            marginRight: 'auto',
+                            width: '100% !important',
+                            borderCollapse: 'collapse',
+                            marginTop: '1.5em',
+                            marginBottom: '1.5em',
+                            overflowX: 'auto',
+                            display: 'block',
+                        },
+                        'th, td': {
+                            border: '1px  solid #ddd',
+                            padding: '0.75em 1em',
+                            color: theme('colors.black'), // текст внутри таблиц — черный
+                            textAlign: 'center',
+
+                        },
+                        th: {
+                            // backgroundColor: '#e0e7ff',
+                            fontWeight: '600',
+                            textAlign: 'center',
+                        },
+                        'tr:nth-child(even)': {
+                            // backgroundColor: '#f9fafb',
+                        },
+                        'h1, h2, h3, h4, h5': {
+                            fontWeight: 'normal', // или 600, как нужно
+                            color: '#000000',
+                            marginTop: '0',
+
+                        },
+                        h1: {
+                            fontSize: '2.25rem',
+                            lineHeight: '2.5rem',
+                        },
+                        h2: {
+                            fontSize: '1.875rem',
+                            lineHeight: '2.25rem',
+                        },
+                        h3: {
+                            fontSize: '1.5rem',
+                            lineHeight: '2rem',
+                        },
+                        h4: {
+                            fontSize: '1.25rem',
+                            lineHeight: '1.75rem',
+                        },
+                        h5: {
+                            fontSize: '1.125rem',
+                            lineHeight: '1.5rem',
+                        },
+                    },
+                },
+            }),
+
         },
         screens: {
             sm: "365px",
@@ -56,5 +115,7 @@ module.exports = {
             "2xl": "1536px",
         },
     },
-    plugins: [],
+    plugins: [
+        require('@tailwindcss/typography'),
+    ],
 };

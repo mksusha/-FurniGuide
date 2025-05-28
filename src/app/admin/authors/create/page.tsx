@@ -1,31 +1,108 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import TiptapEditor from '@/app/admin/components/TiptapEditor'; // Импортируй твой компонент редактора правильно
+import '@/app/admin/tiptap-editor.css';
 
 export default function CreateAuthorPage() {
     const [name, setName] = useState('');
+    const [slug, setSlug] = useState('');
     const [avatarUrl, setAvatarUrl] = useState('');
-    const [bio, setBio] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
 
-    const toSlug = (str: string) =>
-        str
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)+/g, '');
+    // TipTap редактор для биографии
+    const editor = useEditor({
+        extensions: [StarterKit],
+        content: '',
+        onUpdate({ editor }) {
+            setBio(editor.getHTML());
+        },
+    });
+
+    const [bio, setBio] = useState('');
+
+    // Функция для генерации слага, поддерживает русский текст (транслитерация)
+    const toSlug = (str: string) => {
+        const ru = 'абвгдеёжзийклмнопрстуфхцчшщьыэюя';
+        const en = ['a','b','v','g','d','e','yo','zh','z','i','y','k','l','m','n','o','p','r','s','t','u','f','h','ts','ch','sh','sch','','y','','e','yu','ya'];
+
+        str = str.toLowerCase();
+
+        let res = '';
+        for (let i = 0; i < str.length; i++) {
+            const char = str[i];
+            const index = ru.indexOf(char);
+            if (index >= 0) {
+                res += en[index];
+            } else if (/[a-z0-9]/.test(char)) {
+                res += char;
+            } else {
+                res += '-';
+            }
+        }
+        // Убираем множественные дефисы и по краям
+        res = res.replace(/-+/g, '-').replace(/(^-|-$)/g, '');
+        return res;
+    };
+
+    // Автоматически обновляем слаг при изменении имени, но не затираем, если пользователь редактировал сам
+    useEffect(() => {
+        // Если slug пустой или совпадает с предыдущим слагом от имени — обновляем
+        const generatedSlug = toSlug(name);
+        if (!slug || slug === toSlug(slug)) {
+            setSlug(generatedSlug);
+        }
+    }, [name]);
+
+    // Загрузка файла аватара
+    const [uploading, setUploading] = useState(false);
+    const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        setError('');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!res.ok) {
+                setError('Ошибка загрузки изображения');
+                return;
+            }
+
+            const data = await res.json();
+
+            if (data.url) {
+                setAvatarUrl(data.url);
+            } else {
+                setError('Не удалось получить ссылку на изображение.');
+            }
+        } catch {
+            setError('Ошибка загрузки изображения. Попробуйте позже.');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     const handleSubmit = async () => {
         setError('');
         if (!name.trim()) return setError('Введите имя автора');
-        if (avatarUrl && !/^https?:\/\/.+\.(jpg|jpeg|png|webp)$/i.test(avatarUrl)) {
+        if (!slug.trim()) return setError('Введите slug');
+        if (avatarUrl && !/^https?:\/\/.+\.(jpg|jpeg|png|webp|svg)$/i.test(avatarUrl)) {
             return setError('Некорректная ссылка на изображение');
         }
 
-        const slug = toSlug(name);
 
         const res = await fetch('/api/admin/authors', {
             method: 'POST',
@@ -60,6 +137,18 @@ export default function CreateAuthorPage() {
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Slug *
+                    </label>
+                    <input
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                        placeholder="ivan-ivanov"
+                        value={slug}
+                        onChange={(e) => setSlug(e.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                         Ссылка на аватар
                     </label>
                     <input
@@ -68,19 +157,35 @@ export default function CreateAuthorPage() {
                         value={avatarUrl}
                         onChange={(e) => setAvatarUrl(e.target.value)}
                     />
+                    {avatarUrl && (
+                        <img
+                            src={avatarUrl}
+                            alt="Аватар превью"
+                            className="mt-2 max-h-40 rounded-lg object-contain"
+                        />
+                    )}
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Или загрузите аватар с устройства
+                    </label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={onFileChange}
+                        disabled={uploading}
+                    />
+                    {uploading && <p className="text-sm text-gray-500 mt-1">Загрузка...</p>}
                 </div>
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Биография
                     </label>
-                    <textarea
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                        placeholder="Краткая информация об авторе"
-                        rows={4}
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
-                    />
+                    <div className="border border-gray-300 rounded-lg px-3 py-2 min-h-[150px]">
+                        <TiptapEditor editor={editor} />
+                    </div>
                 </div>
 
                 {error && (

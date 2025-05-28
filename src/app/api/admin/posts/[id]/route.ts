@@ -26,6 +26,8 @@ export async function PUT(req: NextRequest, context: any) {
                 imageUrl: body.imageUrl || null,
                 categoryId: body.categoryId,
                 authorId: body.authorId || null,
+                metaTitle: body.metaTitle || null,
+                metaDescription: body.metaDescription || null,
             },
         });
 
@@ -35,6 +37,7 @@ export async function PUT(req: NextRequest, context: any) {
         return new NextResponse("Ошибка сервера", { status: 500 });
     }
 }
+
 
 export async function DELETE(req: NextRequest, context: any) {
     const { id } = context.params as { id: string };

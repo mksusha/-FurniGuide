@@ -1,0 +1,97 @@
+.ProseMirror {
+    min-height: 200px;
+    outline: none;
+}
+
+.ProseMirror:focus {
+    outline: 2px solid #6366f1; /* Indigo */
+    outline-offset: 2px;
+}
+
+.ProseMirror h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.ProseMirror ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+}
+
+.ProseMirror ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+}
+
+.ProseMirror table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+.ProseMirror table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1em;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+    border: 1px solid #ddd;
+    padding: 0.5em 1em;
+}
+
+.ProseMirror th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    text-align: left;
+}
+/* Заголовки черным цветом */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5 {
+    color: black !important;
+    font-weight: normal;
+
+}
+
+/* Таблицы на всю ширину с красивым оформлением */
+.prose table {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin: 1em 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+    border: 1px solid #ddd;
+}
+
+.prose th,
+.prose td {
+    padding: 0.75em 1em;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.prose th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: black;
+}
+
+.prose tbody tr:hover {
+    background-color: #f0f0f0;
+}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5 {
+    @apply mt-0 ;
+}

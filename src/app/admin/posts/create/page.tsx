@@ -4,6 +4,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect, useState } from 'react';
+import { useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Table from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import TiptapEditor from "@/app/admin/components/TiptapEditor";
+import '@/app/admin/tiptap-editor.css';
 
 const schema = z.object({
     title: z.string().min(3, 'Минимум 3 символа'),
@@ -12,6 +20,8 @@ const schema = z.object({
     categoryName: z.string().min(1, 'Обязательное поле'),
     authorName: z.string().optional(),
     imageUrl: z.string().url('Некорректная ссылка').optional(),
+    metaTitle: z.string().optional(),
+    metaDescription: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -23,16 +33,42 @@ export default function CreatePost() {
         handleSubmit,
         setValue,
         watch,
+        getValues,
+
         formState: { errors },
     } = useForm<FormValues>({
         resolver: zodResolver(schema),
+        defaultValues: {
+            content: '',
+            metaTitle: '',
+            metaDescription: '',
+        }
     });
 
     const [categories, setCategories] = useState<Option[]>([]);
     const [authors, setAuthors] = useState<Option[]>([]);
 
     const title = watch('title');
+    const metaTitle = watch('metaTitle');
+    const metaDescription = watch('metaDescription');
     const imageUrl = watch('imageUrl');
+
+    // Инициализация редактора TipTap
+    const editor = useEditor({
+        extensions: [
+            StarterKit,
+            Table.configure({
+                resizable: true,
+            }),
+            TableRow,
+            TableHeader,
+            TableCell,
+        ],
+        content: '',
+        onUpdate({ editor }) {
+            setValue('content', editor.getHTML(), { shouldValidate: true });
+        },
+    });
 
     const transliterate = (text: string) => {
         const map: Record<string, string> = {
@@ -53,12 +89,31 @@ export default function CreatePost() {
     };
 
     useEffect(() => {
-        const raw = title?.trim() || '';
+        const raw = (title || '').trim();
         const slug = transliterate(raw)
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9\-]/g, '');
-        if (slug) setValue('slug', slug);
-    }, [title, setValue]);
+
+        if (raw) {
+            setValue('slug', slug);
+
+            const currentMetaTitle = getValues('metaTitle');
+            const currentMetaDescription = getValues('metaDescription');
+
+            // Если пользователь не вводил свой metaTitle — обновим автоматически
+            if (!currentMetaTitle || currentMetaTitle.startsWith('Пост: ')) {
+                setValue('metaTitle', `Пост: ${raw}`);
+            }
+
+            // Аналогично для metaDescription
+            if (!currentMetaDescription || currentMetaDescription.startsWith('Описание статьи "')) {
+                setValue('metaDescription', `Описание статьи "${raw}"`);
+            }
+        }
+    }, [title, setValue, getValues]);
+
+
+
 
     useEffect(() => {
         fetch('/api/admin/categories')
@@ -102,30 +157,84 @@ export default function CreatePost() {
     };
 
     const onSubmit = async (data: FormValues) => {
-        const categoryId = await ensureCategory(data.categoryName);
-        const authorId = await ensureAuthor(data.authorName);
+        try {
+            if (!data.title.trim()) throw new Error('Заголовок обязателен');
+            if (!data.content.trim()) throw new Error('Контент обязателен');
+            if (!data.categoryName.trim()) throw new Error('Категория обязательна');
 
-        const res = await fetch('/api/admin/posts/create', {
-            method: 'POST',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            const categoryId = await ensureCategory(data.categoryName);
+            if (!categoryId) throw new Error('Не удалось получить ID категории');
+
+            const authorId = data.authorName ? await ensureAuthor(data.authorName) : null;
+
+            const body = {
                 title: data.title,
                 slug: data.slug,
                 content: data.content,
                 categoryId,
                 authorId,
-                imageUrl: data.imageUrl,
-            }),
-        });
+                imageUrl: data.imageUrl || null,
+                metaTitle: data.metaTitle || null,
+                metaDescription: data.metaDescription || null,
+            };
 
-        const json = await res.json();
+            console.log('Отправляем тело:', body);
 
-        if (!res.ok) {
-            alert(`Ошибка: ${json.error || 'Неизвестная ошибка'}`);
-            return;
+            const res = await fetch('/api/admin/posts/create', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+
+            const json = await res.json();
+
+            if (!res.ok) {
+                alert(`Ошибка: ${json.error || 'Неизвестная ошибка'}`);
+                return;
+            }
+
+            console.log('Пост создан:', json);
+        } catch (err) {
+            alert(`Ошибка при отправке: ${(err as Error).message}`);
         }
+    };
 
-        console.log('Пост создан:', json);
+
+    const [uploading, setUploading] = useState(false);
+
+    // Обработка загрузки файла
+    const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!res.ok) {
+                alert('Ошибка загрузки изображения');
+                return;
+            }
+
+            const data = await res.json();
+
+            if (data.url) {
+                setValue('imageUrl', data.url, { shouldValidate: true });
+            } else {
+                alert('Не удалось получить ссылку на изображение.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка загрузки изображения. Попробуйте позже.');
+        } finally {
+            setUploading(false);
+        }
     };
 
     return (
@@ -155,6 +264,23 @@ export default function CreatePost() {
                     />
                 </InputField>
 
+                <InputField label="Meta Title">
+                    <input
+                        {...register('metaTitle')}
+                        placeholder="Meta Title (если пусто — генерируется автоматически)"
+                        className="w-full rounded-md border border-gray-300 px-4 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 transition"
+                    />
+                </InputField>
+
+                <InputField label="Meta Description">
+                    <textarea
+                        {...register('metaDescription')}
+                        placeholder="Meta Description (если пусто — генерируется автоматически)"
+                        rows={3}
+                        className="w-full rounded-md border border-gray-300 px-4 py-2 text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 transition"
+                    />
+                </InputField>
+
                 <InputField label="Ссылка на изображение" error={errors.imageUrl?.message}>
                     <input
                         {...register('imageUrl')}
@@ -173,16 +299,12 @@ export default function CreatePost() {
                     )}
                 </InputField>
 
-                <InputField label="Контент" error={errors.content?.message}>
-                    <textarea
-                        {...register('content')}
-                        placeholder="Текст статьи"
-                        className={`w-full rounded-md border border-gray-300 px-4 py-3
-                            text-black placeholder-gray-500 resize-none h-40
-                            focus:outline-none focus:ring-2 focus:ring-indigo-600 transition
-                            ${errors.content ? 'border-red-500 focus:ring-red-500' : ''}`}
-                    />
+                <InputField label="Загрузить изображение">
+                    <input type="file" onChange={onFileChange} disabled={uploading} />
+                    {uploading && <p className="text-sm text-gray-500 mt-1">Загрузка...</p>}
                 </InputField>
+
+                <TiptapEditor editor={editor} />
 
                 <InputField label="Категория (можно новую)" error={errors.categoryName?.message}>
                     <input

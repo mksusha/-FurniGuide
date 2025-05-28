@@ -78,8 +78,12 @@ export default async function AuthorPage({
                             <div>
                                 <h1 className="text-3xl font-bold text-white">{author.name}</h1>
                                 {author.bio && (
-                                    <p className="text-white mt-2 text-sm leading-relaxed">{author.bio}</p>
+                                    <div
+                                        className="text-white mt-2 text-sm leading-relaxed"
+                                        dangerouslySetInnerHTML={{ __html: author.bio }}
+                                    />
                                 )}
+
                             </div>
                         </div>
 

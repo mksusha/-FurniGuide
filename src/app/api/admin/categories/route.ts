@@ -60,24 +60,28 @@ export async function GET() {
 export async function POST(req: NextRequest) {
     const body = await req.json();
     const name = body.name?.trim();
+    const userSlug = body.slug?.trim();
+    const metaTitle = body.metaTitle?.trim() || null;
+    const metaDescription = body.metaDescription?.trim() || null;
 
     if (!name) {
         return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    // Проверка, существует ли уже категория с таким именем
     const existing = await prisma.category.findFirst({
         where: { name },
     });
 
     if (existing) return NextResponse.json(existing);
 
-    const slug = slugify(name);
+    const slug = userSlug ? slugify(userSlug) : slugify(name);
 
     const newCategory = await prisma.category.create({
         data: {
             name,
             slug,
+            metaTitle,
+            metaDescription,
         },
     });
 

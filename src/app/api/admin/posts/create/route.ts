@@ -51,7 +51,9 @@ export async function POST(req: NextRequest) {
             categoryId,
             authorId,
             authorName,
-            imageUrl // 🔥 Добавили imageUrl
+            imageUrl,
+            metaTitle,
+            metaDescription,
         } = body;
 
         if (!title || !slug || !content || !categoryId) {
@@ -102,7 +104,9 @@ export async function POST(req: NextRequest) {
                 content,
                 categoryId,
                 authorId: resolvedAuthorId,
-                imageUrl, // ✅ Сохраняем imageUrl
+                imageUrl: imageUrl || null,
+                metaTitle: metaTitle || null,
+                metaDescription: metaDescription || null,
             },
         });
 

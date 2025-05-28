@@ -20,19 +20,22 @@ export async function generateMetadata({
                                        }: {
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-    const resolvedParams = await params;
+    const { slug } = await params;
 
     const category = await prisma.category.findUnique({
-        where: { slug: resolvedParams.slug },
+        where: { slug },
     });
 
     if (!category) return {};
 
     return {
-        title: category.name.slice(0, 60),
-        description: `Статьи и материалы по категории: ${category.name}`.slice(0, 155),
+        title: category.metaTitle?.slice(0, 60) || category.name.slice(0, 60),
+        description:
+            category.metaDescription?.slice(0, 155) ||
+            `Статьи и материалы по категории: ${category.name}`.slice(0, 155),
     };
 }
+
 
 export default async function CategoryPage({ params, searchParams }: Props) {
     const resolvedParams = await params;

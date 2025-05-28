@@ -21,10 +21,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     if (!post) return {};
 
     return {
-        title: post.title.slice(0, 60),
-        description: post.subtitle?.slice(0, 155) ?? "",
+        title: post.metaTitle?.slice(0, 60) || post.title.slice(0, 60),
+        description: post.metaDescription?.slice(0, 155) || post.subtitle?.slice(0, 155) || "",
     };
 }
+
 
 export default async function PostPage({ params }: Props) {
     const resolvedParams = await params;
@@ -96,7 +97,6 @@ export default async function PostPage({ params }: Props) {
                         </div>
 
 
-
                         {/* Заголовок и подзаголовок */}
                         <h1 className="text-4xl font-bold mb-4 text-gray-900">{post.title}</h1>
 
@@ -114,14 +114,17 @@ export default async function PostPage({ params }: Props) {
                         )}
 
                         {/* Контент */}
-                        <div className="prose prose-indigo max-w-none text-gray-800">
-                            <p>{post.content}</p>
-                        </div>
+                        <div
+                            className="prose  max-w-none text-gray-800"
+                            dangerouslySetInnerHTML={{__html: post.content}}
+                        />
+
+
                     </div>
                 </main>
             </div>
 
-            <Footer />
+            <Footer/>
         </div>
     );
 }

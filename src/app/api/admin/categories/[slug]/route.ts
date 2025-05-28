@@ -44,6 +44,9 @@ export async function PUT(req: NextRequest, context: any) {
     try {
         const body = await req.json();
         const newName = body.name?.trim();
+        const inputSlug = body.slug?.trim();
+        const metaTitle = body.metaTitle?.trim();
+        const metaDescription = body.metaDescription?.trim();
 
         if (!newName) {
             return NextResponse.json({ error: 'Name is required' }, { status: 400 });
@@ -102,14 +105,14 @@ export async function PUT(req: NextRequest, context: any) {
                 .replace(/-+$/, '');
         }
 
-        const newSlug = slugify(newName);
+        const newSlug = inputSlug ? slugify(inputSlug) : slugify(newName);
 
         const existingCategory = await prisma.category.findUnique({
             where: { slug: newSlug },
         });
 
         if (existingCategory && existingCategory.id !== category.id) {
-            return NextResponse.json({ error: 'Категория с таким именем уже существует' }, { status: 409 });
+            return NextResponse.json({ error: 'Категория с таким slug уже существует' }, { status: 409 });
         }
 
         const updatedCategory = await prisma.category.update({
@@ -117,6 +120,8 @@ export async function PUT(req: NextRequest, context: any) {
             data: {
                 name: newName,
                 slug: newSlug,
+                metaTitle,
+                metaDescription,
             },
         });
 
