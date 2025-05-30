@@ -10,6 +10,7 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import SearchInput from './SearchInput'
+import FullWidthSearch from "@/components/FullWidthSearch";
 
 type Category = {
     id: string;
@@ -75,7 +76,7 @@ export default function Header({ categories }: HeaderProps) {
 
                     {/* Поиск первым */}
                     <div className="mt-6">
-                        <SearchInput />
+                        <FullWidthSearch onSearch={() => setMobileMenuOpen(false)} />
                     </div>
 
                     {/* Навигация и категории */}

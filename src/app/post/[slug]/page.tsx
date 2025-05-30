@@ -48,7 +48,7 @@ export default async function PostPage({ params }: Props) {
             <Header categories={categories} />
 
             <div className="flex flex-1 flex-col md:flex-row overflow-hidden pt-14">
-                <div className="overflow-y-auto md:h-screen md:w-60 border-b md:border-b-0 md:border-r border-gray-200">
+                <div className="overflow-y-auto md:h-screen lg:w-60 border-b md:border-b-0 md:border-r border-gray-200">
                     <AppSidebar categories={categories} />
                 </div>
 

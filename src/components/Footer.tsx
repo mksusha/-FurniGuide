@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
     return (
-        <footer className="border-t mt-2 text-sm text-gray-500 px-4 py-4 w-full md:pl-64">
+        <footer className="border-t mt-2 text-sm text-gray-500 px-4 py-4 w-full lg:pl-64">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
                 {/* Логотип + название */}
                 <Link href="/" className="flex items-center space-x-2">
@@ -17,7 +17,7 @@ export default function Footer() {
                 </Link>
 
                 {/* Навигация */}
-                <div className="flex flex-wrap justify-center md:justify-start gap-2">
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2">
                     {[
                         { href: "/about", label: "О проекте" },
                         { href: "/contacts", label: "Контакты" },

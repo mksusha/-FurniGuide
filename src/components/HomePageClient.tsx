@@ -92,7 +92,7 @@ export default function HomePageClient({ initialPosts, initialCategories }: Home
         <Header categories={categories} />
 
         <div className="flex flex-1">
-          <aside className="hidden md:block w-64 border-r border-gray-200">
+          <aside className="hidden lg:block w-64 border-r border-gray-200">
             <AppSidebar categories={categories} />
           </aside>
 

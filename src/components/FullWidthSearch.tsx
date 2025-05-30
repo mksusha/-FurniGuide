@@ -4,13 +4,14 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
-export default function FullWidthSearch() {
+export default function FullWidthSearch({ onSearch }: { onSearch?: () => void }) {
     const [query, setQuery] = useState('')
     const router = useRouter()
 
     const handleSearch = () => {
         if (query.trim()) {
             router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+            if (onSearch) onSearch() // Закрыть меню, если колбэк передан
         }
     }
 

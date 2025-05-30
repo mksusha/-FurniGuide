@@ -75,7 +75,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             <Header categories={categories} />
 
             <div className="flex flex-1 flex-col md:flex-row overflow-hidden pt-14">
-                <div className="overflow-y-auto md:h-screen md:w-64 border-b md:border-b-0 md:border-r border-gray-200">
+                <div className="overflow-y-auto md:h-screen lg:w-64 border-b md:border-b-0 md:border-r border-gray-200">
                     <AppSidebar categories={categories} />
                 </div>
 

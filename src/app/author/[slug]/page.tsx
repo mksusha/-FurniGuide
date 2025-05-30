@@ -55,7 +55,7 @@ export default async function AuthorPage({
             <Header categories={categories} />
 
             <div className="flex flex-1 flex-col md:flex-row pt-14 overflow-hidden">
-                <div className="overflow-y-auto md:h-screen md:w-60 border-b md:border-b-0 md:border-r border-gray-200">
+                <div className="overflow-y-auto md:h-screen lg:w-60 border-b md:border-b-0 md:border-r border-gray-200">
                     <AppSidebar categories={categories} />
                 </div>
 
