@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://furni-guide.vercel.app
+
+# Sitemaps
+Sitemap: https://furni-guide.vercel.app/sitemap.xml

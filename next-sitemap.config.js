@@ -1,5 +1,5 @@
 /** @type {import('next-sitemap').IConfig} */
-module.exports = {
+const config = {
     siteUrl: 'https://furni-guide.vercel.app',
     generateRobotsTxt: true,
     changefreq: 'daily',
@@ -12,5 +12,7 @@ module.exports = {
             },
         ],
     },
-    outDir: './public', // ← сюда добавил
+    outDir: './public',
 };
+
+export default config;
