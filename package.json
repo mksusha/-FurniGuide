@@ -8,7 +8,7 @@
     "seed": "ts-node --esm prisma/seed.ts",
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "postbuild": "next-sitemap",
+    "postbuild": "next-sitemap --config next-sitemap.config.js",
 
     "start": "next start",
     "lint": "next lint"
