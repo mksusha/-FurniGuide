@@ -2,8 +2,8 @@
 module.exports = {
     siteUrl: 'https://furni-guide.vercel.app',
     generateRobotsTxt: true,
-    changefreq: 'daily', // ≤ 24ч
-    exclude: ['/404', '/500'], // исключаем ошибки
+    changefreq: 'daily',
+    exclude: ['/404', '/500'],
     robotsTxtOptions: {
         policies: [
             {
@@ -12,4 +12,5 @@ module.exports = {
             },
         ],
     },
+    outDir: './public', // ← сюда добавил
 };
