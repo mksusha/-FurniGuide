@@ -184,9 +184,11 @@ export default function PostCard({ post, categoryName, siteUrl }: PostCardProps)
                         <img
                             src={post.imageUrl}
                             alt={post.title}
+                            loading="lazy"
                             className="rounded-lg aspect-video object-cover mt-4"
                         />
                     )}
+
                 </Link>
             </div>
 

@@ -31,7 +31,7 @@ export default function Header({ categories }: HeaderProps) {
                 {/* Логотип максимально слева */}
                 <div className="flex flex-1">
                     <a href="/" className="flex items-center space-x-2">
-                        <img alt="Логотип" src="/favicon.ico" className="h-10 w-auto" />
+                        <img  alt="Логотип сайта — иконка" src="/favicon.ico" className="h-10 w-auto" />
                         <span className="text-lg font-semibold text-gray-900 hidden sm:inline">FurniGuide</span>
                     </a>
                 </div>

@@ -7,10 +7,12 @@ export default function Footer() {
                 {/* Логотип + название */}
                 <Link href="/" className="flex items-center space-x-2">
                     <img
-                        alt="Логотип"
+                        loading="lazy"
+                        alt="Логотип сайта"
                         src="/favicon.ico"
                         className="h-8 w-8"
                     />
+
                     <span className="text-base font-semibold text-gray-900">
                         FurniGuide
                     </span>

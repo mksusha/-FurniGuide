@@ -26,9 +26,10 @@ export default function FurnitureBlogFeatures() {
                         </div>
                         <div className="px-4 py-2 flex-1 flex items-center justify-center">
                             <img
+                                loading="lazy"
                                 className="object-contain h-full lg:max-h-70 max-h-50"
                                 src="/images/2.png"
-                                alt=""
+                                alt="Категории мебели — гарнитуры, офисная мебель и другие"
                             />
                         </div>
                     </div>
@@ -64,18 +65,25 @@ export default function FurnitureBlogFeatures() {
                                 </p>
                             </div>
                             <div className="flex-1 flex items-center justify-center gap-4 px-6 py-4">
-                                {["/images/ozon.svg", "/images/w.png"].map((src, i) => (
-                                    <div
-                                        key={i}
-                                        className="h-14 w-14 sm:h-16 sm:w-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center"
-                                    >
-                                        <img
-                                            className="w-[150%] h-[150%] object-cover -m-2"
-                                            src={src}
-                                            alt={`Logo ${i}`}
-                                        />
-                                    </div>
-                                ))}
+                                {["/images/ozon.svg", "/images/w.png"].map((src, i) => {
+                                    const altTexts = [
+                                        "Логотип Ozon — маркетплейс",
+                                        "Логотип Wildberries — маркетплейс"
+                                    ];
+                                    return (
+                                        <div
+                                            key={i}
+                                            className="h-14 w-14 sm:h-16 sm:w-16 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center"
+                                        >
+                                            <img
+                                                loading="lazy"
+                                                className="w-[150%] h-[150%] object-cover -m-2"
+                                                src={src}
+                                                alt={altTexts[i]}
+                                            />
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -92,9 +100,10 @@ export default function FurnitureBlogFeatures() {
                         </div>
                         <div className="flex-1 flex justify-center items-center px-4 py-2">
                             <img
+                                loading="lazy"
                                 className="object-contain h-full lg:max-h-70 max-h-50 transform scale-x-[-1]"
                                 src="/images/3.png"
-                                alt="Интерьер"
+                                alt="Вдохновляющий интерьер с мебелью и уютной обстановкой"
                             />
                         </div>
                     </div>

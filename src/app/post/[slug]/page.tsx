@@ -71,6 +71,7 @@ export default async function PostPage({ params }: Props) {
                                     <img
                                         src={post.author.avatarUrl || '/images/avatar.svg'}
                                         alt={post.author.name}
+                                        loading="lazy"
                                         className="w-12 h-12 rounded-full object-cover mr-3"
                                     />
                                     <div>

@@ -205,9 +205,11 @@ export default function PostCardHorizontal({ post, categoryName, siteUrl }: Post
                 <img
                     src={post.imageUrl}
                     alt={post.title}
+                    loading="lazy"
                     className="w-full md:w-56 h-40 object-cover rounded-lg flex-shrink-0"
                 />
             )}
+
 
             {shareOpen && portalContainer && createPortal(shareMenu, portalContainer)}
         </Link>
