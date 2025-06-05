@@ -17,5 +17,11 @@ export async function GET(request: NextRequest) {
         },
     });
 
-    return NextResponse.json(posts);
+
+    return new NextResponse(JSON.stringify(posts), {
+        headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-store", // 👈 критично важно
+        },
+    });
 }

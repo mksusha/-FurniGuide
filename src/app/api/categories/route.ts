@@ -12,7 +12,13 @@ export async function GET() {
             },
         });
 
-        return NextResponse.json(categories);
+        return new NextResponse(JSON.stringify(categories), {
+            headers: {
+                "Content-Type": "application/json",
+                "Cache-Control": "no-store",
+            },
+        });
+
     } catch (error) {
         console.error("Ошибка при получении категорий:", error);
         return NextResponse.json(
